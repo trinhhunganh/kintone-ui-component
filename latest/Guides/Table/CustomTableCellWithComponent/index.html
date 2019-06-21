@@ -38,7 +38,7 @@
     
     
       
-        <title>Create custom cell with ui componentns - kintone UI Component</title>
+        <title>Create custom cell with ui components - kintone UI Component</title>
       
     
     
@@ -628,11 +628,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Create custom cell with ui componentns
+        Create custom cell with ui components
       </label>
     
-    <a href="./" title="Create custom cell with ui componentns" class="md-nav__link md-nav__link--active">
-      Create custom cell with ui componentns
+    <a href="./" title="Create custom cell with ui components" class="md-nav__link md-nav__link--active">
+      Create custom cell with ui components
     </a>
     
       
@@ -681,6 +681,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3-implement-update-function" title="3. Implement update function" class="md-nav__link">
+    3. Implement update function
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -708,6 +715,18 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ReactOnCellChangeExplain/" title="Implement cell change handler" class="md-nav__link">
+      Implement cell change handler
+    </a>
   </li>
 
         
@@ -777,6 +796,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3-implement-update-function" title="3. Implement update function" class="md-nav__link">
+    3. Implement update function
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -815,22 +841,27 @@
                 
                 <h1 id="how-to-implement-custom-table-cell-with-pure-dom-elements">How to implement custom table cell (with pure DOM elements)</h1>
 <h2 id="overview">Overview</h2>
-<p>This guide will show how to create a simple custom table cell containing of 1 text input and 1 button from ui components <a href="../../../Reference/Text">Text</a> and Button.</p>
+<p>This guide will show how to create a simple custom table cell containing of 1 text input and 1 button from ui components <a href="../../../Reference/Text">Text</a> and <a href="../../../Reference/Button">Button</a>.</p>
 <h2 id="step-1-define-table-data-structure">Step 1: Define table data structure</h2>
 <p><script src="https://gist.github.com/trinhhunganh/5e9dd87c8b824a4fa6087c5775206ba1.js"></script></p>
 <h2 id="step-2-implement-your-custom-element">Step 2: Implement your custom element</h2>
 <h3 id="1-custom-element-structure">1. Custom element structure</h3>
 <p>Custom cell containing a text field and a button. <br/>
-We will need to implement "update" function because we use ui-components to construct the custom cell
-<script src="https://gist.github.com/trinhhunganh/08863ffbc84d53c84f50d4b12de16dbf.js"></script></p>
+We will need to implement "init" and "update" functions for the custom cell.
+<script src="https://gist.github.com/trinhhunganh/04eb9793fbcf87f49f1d3af44aa6147f.js"></script></p>
 <h3 id="2-implement-init-function">2. Implement init function</h3>
-<p>Inside "init" function We will need to create DOM elements for the cell and return it at the end of 'init' function. <br/>
-We will also need to bind events of the DOM elements here
-<script src="https://gist.github.com/trinhhunganh/b32faa4308768e4260659f9d527acfe6.js"></script></p>
+<p>Inside "init" function we will need to create DOM for the cell and return it at the end of 'init' function. <br/>
+We will also need to bind events for the components here.
+<script src="https://gist.github.com/trinhhunganh/b45128ff28dce57c968c48cae665c3a1.js"></script></p>
+<h3 id="3-implement-update-function">3. Implement update function</h3>
+<p>Inside "update" function we will need to update values shown on the components based on related data pieces from table row data. <br/>
+"update" function will be called each time table data is updated. </p>
+<script src="https://gist.github.com/trinhhunganh/637748f63fabeba6c55c41254e6185fe.js"></script>
+
 <h2 id="step-3-initializing-table-and-add-custom-table-cell">Step 3: Initializing table and add custom table cell</h2>
 <p><script src="https://gist.github.com/trinhhunganh/6212c91b022aaa77761debf994b716f2.js"></script></p>
 <h2 id="final-result-should-look-something-like-this">Final result should look something like this</h2>
-<p><script src="https://gist.github.com/trinhhunganh/fb3e5f47285621bfbda4845aacfcb736.js"></script></p>
+<p><script src="https://gist.github.com/trinhhunganh/253bf36d5438a159ab7f5440e3682b05.js"></script></p>
                 
                   
                 
@@ -865,6 +896,20 @@ We will also need to bind events of the DOM elements here
             </div>
           </a>
         
+        
+          <a href="../ReactOnCellChangeExplain/" title="Implement cell change handler" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Implement cell change handler
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>

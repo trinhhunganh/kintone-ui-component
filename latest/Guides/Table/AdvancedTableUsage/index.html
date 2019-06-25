@@ -667,6 +667,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#step-3-override-default-row-data-on-row-add" title="Step 3: Override default row data on row add" class="md-nav__link">
+    Step 3: Override default row data on row add
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-define-overriden-row-data" title="1. Define overriden row data" class="md-nav__link">
+    1. Define overriden row data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-define-onrowadd-event-handler-function-and-return-above-row-data-from-the-handler-function" title="2. Define 'onRowAdd' event handler function and return above row data from the handler function" class="md-nav__link">
+    2. Define 'onRowAdd' event handler function and return above row data from the handler function
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-3-initialize-the-table" title="Step 3: Initialize the table" class="md-nav__link">
     Step 3: Initialize the table
   </a>
@@ -779,6 +806,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#step-3-override-default-row-data-on-row-add" title="Step 3: Override default row data on row add" class="md-nav__link">
+    Step 3: Override default row data on row add
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-define-overriden-row-data" title="1. Define overriden row data" class="md-nav__link">
+    1. Define overriden row data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-define-onrowadd-event-handler-function-and-return-above-row-data-from-the-handler-function" title="2. Define 'onRowAdd' event handler function and return above row data from the handler function" class="md-nav__link">
+    2. Define 'onRowAdd' event handler function and return above row data from the handler function
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-3-initialize-the-table" title="Step 3: Initialize the table" class="md-nav__link">
     Step 3: Initialize the table
   </a>
@@ -816,7 +870,8 @@ The new table is designed with the concept of using table data to render all tab
 This guide will show how to use all of the built-in table column types in more advanced ways, for example: <br/>
 1. to enable/disable certain cells / cell's values <br/>
 2. to register event handlers for a specific cell <br/>
-3. to show/hide certain cells</p>
+3. to show/hide certain cells
+4. to override row data on row add</p>
 <h2 id="step-1-define-table-data">Step 1: Define table data</h2>
 <p>We will define the following datas: <br/>
 1. Initial data for a sample row. <br/>
@@ -825,6 +880,11 @@ All the advanced properties will also be defined. <br/>
 <script src="https://gist.github.com/trinhhunganh/2aa5291825d59faefa5d6fe5c16d5bc4.js"></script></p>
 <h2 id="step-2-define-table-columns-and-data-mappings-as-well-as-an-event-handler">Step 2: Define table columns and data mappings, as well as an event handler</h2>
 <p><script src="https://gist.github.com/trinhhunganh/ad215b28599f8a8f27f1e094d2b22a12.js"></script></p>
+<h2 id="step-3-override-default-row-data-on-row-add">Step 3: Override default row data on row add</h2>
+<h3 id="1-define-overriden-row-data">1. Define overriden row data</h3>
+<p><script src="https://gist.github.com/trinhhunganh/d308026aad07cb9904f79d0ff0a757f7.js"></script></p>
+<h3 id="2-define-onrowadd-event-handler-function-and-return-above-row-data-from-the-handler-function">2. Define 'onRowAdd' event handler function and return above row data from the handler function</h3>
+<p><script src="https://gist.github.com/trinhhunganh/33c8bef6273cb09bfaf836bf9550305e.js"></script></p>
 <h2 id="step-3-initialize-the-table">Step 3: Initialize the table</h2>
 <p>Normally, we would need to also define 'defaultRowData', which is used to create new table rows. <br />
 For this guide we will use the same 'sampleRow1Data' as 'defaultRowData' for the sake of simplicity.

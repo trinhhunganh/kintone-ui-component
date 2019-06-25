@@ -1,4 +1,4 @@
-# How to implement custom table cell (with ui components)
+# How to implement custom table cell (with kintone UI Components)
 ## Overview
 This guide will show how to create a simple custom table cell containing of 1 text input and 1 button from ui components [Text](../../../Reference/Text) and [Button](../../../Reference/Button).
 

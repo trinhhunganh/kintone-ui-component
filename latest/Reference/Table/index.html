@@ -1118,13 +1118,13 @@
 <td>The row template.</td>
 </tr>
 <tr>
-<td>options.columns[rowIndex].cell</td>
+<td>options.columns[columnIndex].cell</td>
 <td>Function</td>
 <td>Yes</td>
 <td>Returns cell template object. Cell template object must implement init and update functions <br> - init: to return DOM element for initializing cell's DOM <br> - update: to update DOM of the cell based on the data returned <br> Related guides: <br><a href="../../Guides/Table/CustomTableCellNoComponent/">Create custom cell with DOM elements (JS)</a> <br> <a href="../../Guides/Table/CustomTableCellWithComponent/">Create custom cell with ui components (JS)</a></td>
 </tr>
 <tr>
-<td>options.columns[rowIndex].header</td>
+<td>options.columns[columnIndex].header</td>
 <td>String</td>
 <td>Yes</td>
 <td>Header of column.</td>
@@ -1145,7 +1145,7 @@
 <td>options.onCellChange</td>
 <td>Callback</td>
 <td>No</td>
-<td>Handler for cell change event. <br>Return row data object to overwrite default row data object. <br> Related guides: <a href="../../Guides/Table/ReactOnCellChangeExplain/">Implement cell change handler (React)</a><br></td>
+<td>Handler for cell change event. <br>Return row data object to overwrite default row data object. <br> Related guides: <a href="../../Guides/Table/ReactOnCellChangeExplain/">Implement cell change handler (React)</a></td>
 </tr>
 <tr>
 <td>options.onRowAdd</td>

@@ -32,11 +32,11 @@
 |options|Object|Yes|The object contains the params of constructor.|
 |options.actionButtonsShown|Boolean|No|Show the action buttons when this parameter is True. <br>Default: True|
 |options.columns|Array&lt;Object&gt;|Yes|The row template.|
-|options.columns[columnIndex].cell|Function|Yes|Returns cell template object. Cell template object must implement init and update functions <br> - init: to return DOM element for initializing cell's DOM <br> - update: to update DOM of the cell based on the data returned <br> Related guides: <br>[Create custom cell with DOM elements (JS)](../Guides/Table/CustomTableCellNoComponent.md) <br> [Create custom cell with ui components (JS)](../Guides/Table/CustomTableCellWithComponent.md)|
+|options.columns[columnIndex].cell|Function|Yes|Returns cell template object. Cell template object must implement init and update functions <br> - init: to return DOM element for initializing cell's DOM <br> - update: to update DOM of the cell based on the data returned <br> Related guides: <br><b>[Create custom cell with DOM elements (JS)](../Guides/Table/CustomTableCellNoComponent.md)</b><br><b>[Create custom cell with ui components (JS)](../Guides/Table/CustomTableCellWithComponent.md)</b>|
 |options.columns[columnIndex].header|String|Yes|Header of column.|
 |options.data|Array&lt;Object&gt;|Yes|The value of table. <br> Refer to the [getValue()](#getvalue) and [setValue(value)](#setvaluevalue) for more information |
 |options.defaultRowData|Object|Yes|The default value of new row.|
-|options.onCellChange|Callback|No|Handler for cell change event. <br>Return row data object to overwrite default row data object. <br> Related guides: [Implement cell change handler (React)](../Guides/Table/ReactOnCellChangeExplain.md)|
+|options.onCellChange|Callback|No|Handler for cell change event. <br>Return row data object to overwrite default row data object. <br> Related guides: <b>[Implement cell change handler (React)](../Guides/Table/ReactOnCellChangeExplain.md)</b>|
 |options.onRowAdd|Callback|No|Handler for row add event|
 |options.onRowRemove|Callback|No|Handler for row remove event|
 
@@ -44,9 +44,6 @@
 Below are some guides to show and explain how to work with this table component
 #### [Simple table usage with built-in column types (JS)](../Guides/Table/SimpleTableUsage.md)
 #### [Advanced table usage with built-in column types (JS)](../Guides/Table/AdvancedTableUsage.md)
-#### [Create custom cell with DOM elements (JS)](../Guides/Table/CustomTableCellNoComponent.md)
-#### [Create custom cell with ui components (JS)](../Guides/Table/CustomTableCellWithComponent.md)
-#### [Implement cell change handler (React)](../Guides/Table/ReactOnCellChangeExplain.md)
 
 ## Methods
 ### render()

@@ -132,10 +132,12 @@ const DateTime = ({
   useEffect(()=> {
     if(value) {
       // change internal values here
-      // set text input value
       setInputValue(format(value, dateFormat))
       setTimeDateValue(value)
       setHasSelection(true)
+      if(typeDateTime === 'datetime' || typeDateTime === 'time') {
+        setTimeValue(format(value, timeFormat))
+      }
     }
   }, [value])
 

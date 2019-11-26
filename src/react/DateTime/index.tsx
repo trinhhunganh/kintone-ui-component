@@ -38,43 +38,47 @@ const DateTime = ({
     localeObj = zh;
   }
 
-  const [timeDateValue, setTimeDateValue] = useState(value ? new Date(value) : new Date());
+  const isUncontrolledComponent = value === undefined
+  const [dateValue, setDateValue] = useState<null|Date>(value ? new Date(value) : new Date());
+  const [calendarDisplayDate, setCalendarDisplayDate] = useState(value ? new Date(value) : new Date());
+  const [timeValue, setTimeValue] = useState(value ? new Date(value) : new Date());
   const [pickerDisplay, setPickerDisplay] = useState('none');
   const [showPickerError, setShowPickerError] = useState(false);
   const [dateError, setDateError] = useState('');
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
-  const [timeValue, setTimeValue] = useState(format(timeDateValue, timeFormat));
+  const [inputTimeValue, setInputTimeValue] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
   const [typeDateTime, setTypeDateTime] = useState(type);
   const wrapperRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const _changeMinutesBy = (minutes: number, timeInput: HTMLInputElement) => {
-    const newTime = new Date(timeDateValue);
+    const newTime = new Date(timeValue);
     newTime.setSeconds(0);
-    newTime.setMinutes(timeDateValue.getMinutes() + minutes);
-    setTimeDateValue(newTime);
+    newTime.setMinutes(timeValue.getMinutes() + minutes);
+    setTimeValue(newTime);
     if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+      newTime.setDate(dateValue.getDate())
+      newTime.setMonth(dateValue.getMonth())
+      newTime.setFullYear(dateValue.getFullYear())
       onChange(newTime);
     }
     setTimeout(()=>{
-      setTimeValue(format(newTime, timeFormat));
+      setInputTimeValue(format(newTime, timeFormat));
       timeInput.setSelectionRange(3, 5);
     }, 1);
   };
   const _changeHoursBy = (hours: number, timeInput: HTMLInputElement) => {
-    const newTime = new Date(timeDateValue);
+    const newTime = new Date(timeValue);
     newTime.setSeconds(0);
-    newTime.setHours(timeDateValue.getHours() + hours);
-    newTime.setMonth(timeDateValue.getMonth());
-    newTime.setDate(timeDateValue.getDate());
-    setTimeDateValue(new Date(newTime));
+    newTime.setHours(timeValue.getHours() + hours);
+    setTimeValue(new Date(newTime));
     if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
       onChange(new Date(newTime));
     }
     setTimeout(()=>{
-      setTimeValue(format(newTime, timeFormat));
+      setInputTimeValue(format(newTime, timeFormat));
       timeInput.setSelectionRange(0, 2);
     }, 1);
   };
@@ -130,31 +134,30 @@ const DateTime = ({
     }
   };
 
-  useEffect(()=> {
-    if(value) {
-      let hasError = false
-      const newDateInputValue = format(value, dateFormat)
-      if(newDateInputValue === dateFormat) {
-        hasError = true
-      }
-      if(!hasError) {
-        setShowPickerError(false)
-        setTimeDateValue(value)
-        setHasSelection(true)
-        if(typeDateTime === 'datetime' || typeDateTime === 'time') {
-          setTimeValue(format(value, timeFormat))
+  if(!isUncontrolledComponent) {
+  } else {
+    useEffect(() => {
+      if(dateValue) {
+        // validate date format
+        const newDateInputValue = format(dateValue, dateFormat)
+        setInputValue(newDateInputValue)
+        setCalendarDisplayDate(dateValue)
+        if(newDateInputValue === dateFormat) {
+          setDateError(Message.datetime.INVALID_DATE)
+          setShowPickerError(true)
+        } else {
+          setHasSelection(true)
         }
       } else {
-        setDateError(Message.datetime.INVALID_DATE);
-        setShowPickerError(true)
+        setInputValue('')
+        setShowPickerError(false)
+        setHasSelection(false)
       }
-      setInputValue(newDateInputValue)
-    } else if (value === null) {
-      setInputValue('')
-      setShowPickerError(false)
-      setHasSelection(false)
-    }
-  }, [value])
+    }, [dateValue])
+    useEffect(() => {
+
+    }, [timeValue])
+  }
 
   if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
     setTypeDateTime('datetime');
@@ -174,54 +177,54 @@ const DateTime = ({
                 onFocus={(e) => {
                   setPickerDisplay('block');
                   setTimePickerDisplay('none');
-                  if (!showPickerError && hasSelection && e.target.value) {
-                    const temporary = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
-                    const dateValue = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
-                    temporary.setSeconds(timeDateValue.getSeconds());
-                    temporary.setMinutes(timeDateValue.getMinutes());
-                    temporary.setHours(timeDateValue.getHours());
-                    temporary.setDate(temporary.getDate() - 1);
+                  // if (!showPickerError && hasSelection && e.target.value) {
+                  //   const temporary = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
+                  //   const dateValue = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
+                  //   temporary.setSeconds(timeDateValue.getSeconds());
+                  //   temporary.setMinutes(timeDateValue.getMinutes());
+                  //   temporary.setHours(timeDateValue.getHours());
+                  //   temporary.setDate(temporary.getDate() - 1);
 
-                    dateValue.setSeconds(timeDateValue.getSeconds());
-                    dateValue.setMinutes(timeDateValue.getMinutes());
-                    dateValue.setHours(timeDateValue.getHours());
-                    setTimeDateValue(temporary);
-                    setTimeout(()=>{
-                      setTimeDateValue(dateValue);
-                    }, 1);
-                  }
+                  //   dateValue.setSeconds(timeDateValue.getSeconds());
+                  //   dateValue.setMinutes(timeDateValue.getMinutes());
+                  //   dateValue.setHours(timeDateValue.getHours());
+                  //   setTimeDateValue(temporary);
+                  //   setTimeout(()=>{
+                  //     setTimeDateValue(dateValue);
+                  //   }, 1);
+                  // }
                 }}
                 value={inputValue}
                 onBlur={(e) => {
-                  const tempDate = parseStringToDate(e.target.value, dateFormat);
-                  let returnDate: Date|null = null;
-                  if (tempDate instanceof Date && !isNaN(tempDate as any)) {
-                    returnDate = new Date(tempDate);
-                    if(typeDateTime === 'datetime') {
-                      returnDate.setHours(timeDateValue.getHours());
-                      returnDate.setMinutes(timeDateValue.getMinutes());
-                      returnDate.setSeconds(0);
-                    }
-                    setShowPickerError(false);
-                  } else if (e.target.value) {
-                    setDateError(Message.datetime.INVALID_DATE);
-                    setShowPickerError(true);
-                    setHasSelection(false)
-                  }
+                  // const tempDate = parseStringToDate(e.target.value, dateFormat);
+                  // let returnDate: Date|null = null;
+                  // if (tempDate instanceof Date && !isNaN(tempDate as any)) {
+                  //   returnDate = new Date(tempDate);
+                  //   if(typeDateTime === 'datetime') {
+                  //     returnDate.setHours(timeDateValue.getHours());
+                  //     returnDate.setMinutes(timeDateValue.getMinutes());
+                  //     returnDate.setSeconds(0);
+                  //   }
+                  //   setShowPickerError(false);
+                  // } else if (e.target.value) {
+                  //   setDateError(Message.datetime.INVALID_DATE);
+                  //   setShowPickerError(true);
+                  //   setHasSelection(false)
+                  // }
 
-                  const relatedTarget = e.relatedTarget ||
-                    (e as any).explicitOriginalTarget ||
-                    document.activeElement; // IE11
-                  const calendar = calendarRef.current as HTMLDivElement;
-                  if (
-                    relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
-                  ) {
-                    if (returnDate) {
-                      onChange(returnDate);
-                      setShowPickerError(false);
-                    }
-                    setPickerDisplay('none');
-                  }
+                  // const relatedTarget = e.relatedTarget ||
+                  //   (e as any).explicitOriginalTarget ||
+                  //   document.activeElement; // IE11
+                  // const calendar = calendarRef.current as HTMLDivElement;
+                  // if (
+                  //   relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
+                  // ) {
+                  //   if (returnDate) {
+                  //     onChange(returnDate);
+                  //     setShowPickerError(false);
+                  //   }
+                  //   setPickerDisplay('none');
+                  // }
                 }}
                 onKeyDown={
                   (e) => {
@@ -246,7 +249,7 @@ const DateTime = ({
               <Calendar
                 calRef={calendarRef}
                 pickerDisplay={pickerDisplay}
-                date={timeDateValue}
+                date={calendarDisplayDate}
                 locale={localeObj}
                 hasSelection={hasSelection}
                 onDateClick={
@@ -254,18 +257,22 @@ const DateTime = ({
                     let tempDate: Date = new Date();
                     if (calendarDate) {
                       tempDate.setFullYear(calendarDate.getFullYear(), calendarDate.getMonth(), calendarDate.getDate());
-                      tempDate.setHours(timeDateValue.getHours());
-                      tempDate.setMinutes(timeDateValue.getMinutes());
-                      tempDate.setSeconds(0);
-                      onChange(tempDate);
-                      setInputValue(format(tempDate, dateFormat));
-                      setHasSelection(true);
-                      setShowPickerError(false);
+                      if(timeValue) {
+                        tempDate.setHours(timeValue.getHours());
+                        tempDate.setMinutes(timeValue.getMinutes());
+                        tempDate.setSeconds(0);
+                      }
+                      if(isUncontrolledComponent) {
+                        setDateValue(tempDate)
+                      } else {
+                        onChange(tempDate);
+                      }
                     } else {
-                      onChange(null);
-                      setInputValue('');
-                      setHasSelection(false);
-                      setShowPickerError(false);
+                      if(isUncontrolledComponent) {
+                        setDateValue(null)
+                      } else {
+                        onChange(null);
+                      }
                     }
                     setPickerDisplay('none');
                   }
@@ -273,7 +280,6 @@ const DateTime = ({
               />
             }
           </div>
-
         }
         {
           (typeDateTime === 'datetime' || typeDateTime === 'time') &&

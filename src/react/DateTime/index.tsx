@@ -152,6 +152,7 @@ const DateTime = ({
       } else {
         setShowPickerError(false)
         setHasSelection(true)
+        setTimeValue(dateValue)
       }
     } else {
       setInputValue('')
@@ -167,7 +168,7 @@ const DateTime = ({
       }
     }, [value])
   }
-  
+
   if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
     setTypeDateTime('datetime');
   }

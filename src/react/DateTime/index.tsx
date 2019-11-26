@@ -140,29 +140,34 @@ const DateTime = ({
     }
   };
 
-  if(!isUncontrolledComponent) {
-  } else {
-    useEffect(() => {
-      if(dateValue) {
-        // validate date format
-        const newDateInputValue = format(dateValue, dateFormat)
-        setInputValue(newDateInputValue)
-        setCalendarDisplayDate(dateValue)
-        if(newDateInputValue === dateFormat) {
-          setDateError(Message.datetime.INVALID_DATE)
-          setShowPickerError(true)
-        } else {
-          setShowPickerError(false)
-          setHasSelection(true)
-        }
+  useEffect(() => {
+    if(dateValue) {
+      // validate date format
+      const newDateInputValue = format(dateValue, dateFormat)
+      setInputValue(newDateInputValue)
+      setCalendarDisplayDate(dateValue)
+      if(newDateInputValue === dateFormat) {
+        setDateError(Message.datetime.INVALID_DATE)
+        setShowPickerError(true)
       } else {
-        setInputValue('')
         setShowPickerError(false)
-        setHasSelection(false)
+        setHasSelection(true)
       }
-    }, [dateValue])
-  }
+    } else {
+      setInputValue('')
+      setShowPickerError(false)
+      setHasSelection(false)
+    }
+  }, [dateValue])
 
+  if(!isUncontrolledComponent) {
+    useEffect(()=>{
+      if(value !== undefined) {
+        setDateValue(value)
+      }
+    }, [value])
+  }
+  
   if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
     setTypeDateTime('datetime');
   }
@@ -259,16 +264,16 @@ const DateTime = ({
                         tempDate.setMinutes(timeValue.getMinutes());
                         tempDate.setSeconds(0);
                       }
-                      if(isUncontrolledComponent) {
-                        setDateValue(tempDate)
-                      } else {
+                      if(!isUncontrolledComponent) {
                         onChange(tempDate);
+                      } else {
+                        setDateValue(tempDate)                        
                       }
                     } else if(calendarDate === null) {
-                      if(isUncontrolledComponent) {
-                        setDateValue(null)
-                      } else {
+                      if(!isUncontrolledComponent) {
                         onChange(null);
+                      } else {
+                        setDateValue(null)
                       }
                     }
                     setPickerDisplay('none');

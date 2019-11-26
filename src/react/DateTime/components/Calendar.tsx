@@ -11,7 +11,7 @@ type CalendarProps = {
   locale?: Locale;
   pickerDisplay?: string;
   hasSelection?: boolean;
-  onDateClick?: (date: Date | null, previousDate: Date | null) => void;
+  onDateClick?: (date: Date | null | -1, previousDate: Date | null) => void;
   calRef: any;
 }
 
@@ -83,7 +83,7 @@ const Calendar = ({
           !calRef.current.contains(relatedTarget as HTMLElement) &&
           pickerDisplay !== 'none'
         ) {
-          onDateClick(null, null);
+          onDateClick(-1, null);
         }
       }}
     >

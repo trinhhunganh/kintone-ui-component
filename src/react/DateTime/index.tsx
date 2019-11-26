@@ -39,6 +39,7 @@ const DateTime = ({
   }
 
   const isUncontrolledComponent = value === undefined
+  const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
   const [dateValue, setDateValue] = useState<null|Date>(value ? new Date(value) : new Date());
   const [calendarDisplayDate, setCalendarDisplayDate] = useState(value ? new Date(value) : new Date());
   const [timeValue, setTimeValue] = useState(value ? new Date(value) : new Date());
@@ -47,40 +48,45 @@ const DateTime = ({
   const [dateError, setDateError] = useState('');
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
-  const [inputTimeValue, setInputTimeValue] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
   const [typeDateTime, setTypeDateTime] = useState(type);
-  const wrapperRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const _changeMinutesBy = (minutes: number, timeInput: HTMLInputElement) => {
     const newTime = new Date(timeValue);
-    newTime.setSeconds(0);
-    newTime.setMinutes(timeValue.getMinutes() + minutes);
-    setTimeValue(newTime);
-    if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+    if(dateValue) {
       newTime.setDate(dateValue.getDate())
       newTime.setMonth(dateValue.getMonth())
       newTime.setFullYear(dateValue.getFullYear())
-      onChange(newTime);
     }
-    setTimeout(()=>{
-      setInputTimeValue(format(newTime, timeFormat));
-      timeInput.setSelectionRange(3, 5);
-    }, 1);
+    newTime.setSeconds(0);
+    newTime.setMinutes(timeValue.getMinutes() + minutes);
+    setTimeValue(newTime);
+    if(!isUncontrolledComponent) {
+      if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+        onChange(newTime);
+      }
+    }
+    timeInput.value = format(newTime, timeFormat);
+    timeInput.setSelectionRange(3, 5);
   };
   const _changeHoursBy = (hours: number, timeInput: HTMLInputElement) => {
     const newTime = new Date(timeValue);
+    if(dateValue) {
+      newTime.setDate(dateValue.getDate())
+      newTime.setMonth(dateValue.getMonth())
+      newTime.setFullYear(dateValue.getFullYear())
+    }
     newTime.setSeconds(0);
     newTime.setHours(timeValue.getHours() + hours);
     setTimeValue(new Date(newTime));
-    if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
-      onChange(new Date(newTime));
+    if(!isUncontrolledComponent) {
+      if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+        onChange(newTime);
+      }
     }
-    setTimeout(()=>{
-      setInputTimeValue(format(newTime, timeFormat));
-      timeInput.setSelectionRange(0, 2);
-    }, 1);
+    timeInput.value = format(newTime, timeFormat);
+    timeInput.setSelectionRange(0, 2);
   };
   const timeInputKeydownHandler = (e: React.KeyboardEvent) => {
     const timeTextInput = e.target as HTMLInputElement;
@@ -155,9 +161,6 @@ const DateTime = ({
         setHasSelection(false)
       }
     }, [dateValue])
-    useEffect(() => {
-
-    }, [timeValue])
   }
 
   if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
@@ -166,7 +169,7 @@ const DateTime = ({
 
   if (isVisible) {
     return (
-      <div className="date-time-container" ref={wrapperRef}>
+      <div className="date-time-container">
         {
           (typeDateTime === 'datetime' || typeDateTime === 'date') &&
           <div className="date-container">
@@ -279,6 +282,7 @@ const DateTime = ({
           (typeDateTime === 'datetime' || typeDateTime === 'time') &&
           <div className="time-container">
             <input
+              ref={timeInputRef}
               type="text"
               disabled={isDisabled}
               maxLength={5}
@@ -316,58 +320,62 @@ const DateTime = ({
                   }
                 }
               }
-              value={timeValue}
+              value={format(timeValue, timeFormat)}
               onChange={(e)=>{
                 const timeTextInput = e.target as HTMLInputElement;
                 let newTime = parseStringToTime(timeTextInput.value);
                 if (!newTime) {
-                  newTime = new Date(timeDateValue);
+                  newTime = new Date(timeValue);
                 } else {
-                  newTime.setDate(timeDateValue.getDate());
-                  newTime.setMonth(timeDateValue.getMonth());
-                  newTime.setFullYear(timeDateValue.getFullYear());
+                  newTime.setDate(timeValue.getDate());
+                  newTime.setMonth(timeValue.getMonth());
+                  newTime.setFullYear(timeValue.getFullYear());
                 }
                 if (timeTextInput.selectionStart &&
                   timeTextInput.selectionStart >= 3 && timeTextInput.selectionStart <= 5) {
                   // minutes are being edited
                   let previousMinutes: string;
-                  if (timeDateValue.getMinutes() > 10) {
-                    previousMinutes = ('' + timeDateValue.getMinutes())[1];
+                  if (timeValue.getMinutes() > 10) {
+                    previousMinutes = ('' + timeValue.getMinutes())[1];
                   } else {
-                    previousMinutes = ('' + timeDateValue.getMinutes());
+                    previousMinutes = ('' + timeValue.getMinutes());
                   }
                   if (parseInt(previousMinutes, 10) > 5) {
                     previousMinutes = '0';
                   }
                   newTime.setMinutes(parseInt(previousMinutes + '' + newTime.getMinutes(), 10));
-                  timeTextInput.value = format(newTime, 'HH:mm');
+                  timeTextInput.value = format(newTime, timeFormat);
                   timeTextInput.setSelectionRange(3, 5);
                 } else {
                   // hours are being edited
                   let previousHours: string;
-                  if (timeDateValue.getHours() > 10) {
-                    previousHours = ('' + timeDateValue.getHours())[1];
-                  } else if (timeDateValue.getHours() === 10) {
-                    previousHours = ('' + timeDateValue.getHours())[0];
+                  if (timeValue.getHours() > 10) {
+                    previousHours = ('' + timeValue.getHours())[1];
+                  } else if (timeValue.getHours() === 10) {
+                    previousHours = ('' + timeValue.getHours())[0];
                   } else {
-                    previousHours = ('' + timeDateValue.getHours());
+                    previousHours = ('' + timeValue.getHours());
                   }
                   if (parseInt(previousHours, 10) > 2) {
                     previousHours = '0';
                   }
                   newTime.setHours(parseInt(previousHours + '' + newTime.getHours(), 10));
-                  timeTextInput.value = format(newTime, 'HH:mm');
+                  timeTextInput.value = format(newTime, timeFormat);
                   timeTextInput.setSelectionRange(0, 2);
                 }
                 newTime.setSeconds(0);
-                newTime.setMonth(timeDateValue.getMonth());
-                newTime.setDate(timeDateValue.getDate());
-                setTimeValue(format(newTime, timeFormat));
-                setTimePickerDisplay('none');
-                setTimeDateValue(new Date(newTime));
-                if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
-                  onChange(new Date(newTime));
+                if(dateValue) {
+                  newTime.setMonth(dateValue.getMonth());
+                  newTime.setDate(dateValue.getDate());
+                  newTime.setFullYear(dateValue.getFullYear());
                 }
+                setTimeValue(new Date(newTime));
+                if(!isUncontrolledComponent) {
+                  if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+                    onChange(new Date(newTime));
+                  }
+                }
+                setTimePickerDisplay('none');
               }}
               onKeyDown={
                 (e) => {
@@ -383,14 +391,15 @@ const DateTime = ({
                 onTimeClick={
                   (timePickerDate: Date) => {
                     let tempDate = new Date();
-                    if (timeDateValue) tempDate = new Date(timeDateValue);
+                    if (timeValue) tempDate = new Date(timeValue);
                     tempDate.setHours(timePickerDate.getHours(), timePickerDate.getMinutes());
                     tempDate.setSeconds(0);
-                    setTimeValue(format(tempDate, timeFormat));
                     setTimePickerDisplay('none');
-                    if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
-                      setTimeDateValue(new Date(tempDate));
-                      onChange(tempDate);
+                    setTimeValue(new Date(tempDate));
+                    if(!isUncontrolledComponent) {
+                      if(typeDateTime === 'time' || (inputValue && !showPickerError)) {
+                        onChange(tempDate);
+                      }
                     }
                   }
                 }

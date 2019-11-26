@@ -46,7 +46,6 @@ const DateTime = ({
   const [inputValue, setInputValue] = useState('');
   const [timeValue, setTimeValue] = useState(format(timeDateValue, timeFormat));
   const [hasSelection, setHasSelection] = useState(false);
-  const [isDisableBtn, setDisableBtn] = useState(isDisabled);
   const [typeDateTime, setTypeDateTime] = useState(type);
   const wrapperRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
@@ -154,7 +153,7 @@ const DateTime = ({
               <input
                 type="text"
                 className="kuc-input-text text-input"
-                disabled={isDisableBtn}
+                disabled={isDisabled}
                 onFocus={(e) => {
                   setPickerDisplay('block');
                   setTimePickerDisplay('none');
@@ -225,7 +224,7 @@ const DateTime = ({
               </div>
             }
             {
-              !isDisableBtn &&
+              !isDisabled &&
               <Calendar
                 calRef={calendarRef}
                 pickerDisplay={pickerDisplay}
@@ -276,7 +275,7 @@ const DateTime = ({
           <div className="time-container">
             <input
               type="text"
-              disabled={isDisableBtn}
+              disabled={isDisabled}
               maxLength={5}
               key={1}
               className="kuc-input-text text-input time"
@@ -370,7 +369,7 @@ const DateTime = ({
               }
             />
             {
-              !isDisableBtn &&
+              !isDisabled &&
               <TimePicker
                 timeRef={timeRef}
                 pickerDisplay={timePickerDisplay}

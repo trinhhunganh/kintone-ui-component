@@ -40,7 +40,7 @@ const DateTime = ({
 
   const isUncontrolledComponent = value === undefined
   const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
-  const [dateValue, setDateValue] = useState<null|Date>(value ? new Date(value) : new Date());
+  const [dateValue, setDateValue] = useState<null|Date>(value ? value : new Date());
   const [calendarDisplayDate, setCalendarDisplayDate] = useState(value ? new Date(value) : new Date());
   const [timeValue, setTimeValue] = useState(value ? new Date(value) : new Date());
   const [pickerDisplay, setPickerDisplay] = useState('none');

@@ -22,7 +22,7 @@ type DateTimeConstructorParameters = {
 }
 
 const DateTime = ({
-  value = new Date(),
+  value,
   isDisabled = false,
   isVisible = true,
   onChange = (newDate: Date) => {},
@@ -38,15 +38,14 @@ const DateTime = ({
     localeObj = zh;
   }
 
-  const [defaultValue, setDefaultValue] = useState(value);
+  const [timeDateValue, setTimeDateValue] = useState(value ? new Date(value) : new Date());
   const [pickerDisplay, setPickerDisplay] = useState('none');
   const [showPickerError, setShowPickerError] = useState(false);
   const [dateError, setDateError] = useState('');
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
-  const [timeValue, setTimeValue] = useState(format(value, timeFormat));
-  const [hasSelection, setHasSelection] = useState(true);
-  const [timeDateValue, setTimeDateValue] = useState(new Date(value));
+  const [timeValue, setTimeValue] = useState(format(timeDateValue, timeFormat));
+  const [hasSelection, setHasSelection] = useState(false);
   const [isDisableBtn, setDisableBtn] = useState(isDisabled);
   const [typeDateTime, setTypeDateTime] = useState(type);
   const wrapperRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
@@ -131,53 +130,15 @@ const DateTime = ({
     }
   };
 
-  useEffect(()=>{
-    if (defaultValue !== value) {
-      setDefaultValue(value);
-      setInputValue(format(value, dateFormat));
-      setTimeValue(format(value, timeFormat));
-      setTimeDateValue(new Date(value));
-    } else {
-      const newTimeDateValue = new Date(timeDateValue);
-      let setNewTimeDateValue = false;
-      if (value.getDate() !== timeDateValue.getDate()) {
-        newTimeDateValue.setDate(value.getDate());
-        setNewTimeDateValue = true;
-      }
-      if (value.getMonth() !== timeDateValue.getMonth()) {
-        newTimeDateValue.setDate(value.getDate());
-        setNewTimeDateValue = true;
-      }
-      if (value.getFullYear() !== timeDateValue.getFullYear()) {
-        newTimeDateValue.setFullYear(value.getFullYear());
-        setNewTimeDateValue = true;
-      }
-      if (setNewTimeDateValue && pickerDisplay === 'none') {
-        setTimeDateValue(newTimeDateValue);
-      }
-      if (!hasSelection) {
-        setInputValue('');
-      } else {
-        //validate dateformat
-        if(inputValue !== dateFormat) {
-          const newInputValue = format(value, dateFormat)
-          if(newInputValue === dateFormat) {
-            setInputValue(dateFormat);
-            setDateError(Message.datetime.INVALID_DATE);
-            setShowPickerError(true);
-          } else if(!showPickerError) {
-            setInputValue(newInputValue);
-          }
-        }
-      }
-
-      if (typeof isDisabled !== 'boolean') {
-        setDisableBtn(false);
-      } else {
-        setDisableBtn(isDisabled);
-      }
+  useEffect(()=> {
+    if(value) {
+      // change internal values here
+      // set text input value
+      setInputValue(format(value, dateFormat))
+      setTimeDateValue(value)
+      setHasSelection(true)
     }
-  }, [dateFormat, defaultValue, hasSelection, pickerDisplay, timeDateValue, timeFormat, value, isDisabled]);
+  }, [value])
 
   if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
     setTypeDateTime('datetime');
@@ -197,10 +158,7 @@ const DateTime = ({
                 onFocus={(e) => {
                   setPickerDisplay('block');
                   setTimePickerDisplay('none');
-                  // if (showPickerError) {
-                  //   setHasSelection(false);
-                  // }
-                  if (!showPickerError && hasSelection) {
+                  if (!showPickerError && hasSelection && e.target.value) {
                     const temporary = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
                     const dateValue = new Date(parseStringToDate(e.target.value, dateFormat) as Date);
                     temporary.setSeconds(timeDateValue.getSeconds());
@@ -221,18 +179,13 @@ const DateTime = ({
                 onBlur={(e) => {
                   const tempDate = parseStringToDate(e.target.value, dateFormat);
                   let returnDate: Date|null = null;
-                  if (!e.target.value) {
-                    const todayDate = new Date();
-                    todayDate.setSeconds(0);
-                    todayDate.setHours(timeDateValue.getHours());
-                    todayDate.setMinutes(timeDateValue.getMinutes());
-                    if (todayDate.getTime() !== value.getTime()) {
-                      returnDate = new Date(todayDate);
+                  if (tempDate instanceof Date && !isNaN(tempDate as any)) {
+                    returnDate = new Date(tempDate);
+                    if(typeDateTime === 'datetime') {
+                      returnDate.setHours(timeDateValue.getHours());
+                      returnDate.setMinutes(timeDateValue.getMinutes());
+                      returnDate.setSeconds(0);
                     }
-                    setHasSelection(false);
-                  } else if (tempDate instanceof Date && !isNaN(tempDate as any)) {
-                    returnDate = new Date(value);
-                    returnDate.setFullYear(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate());
                     setShowPickerError(false);
                   } else if (e.target.value) {
                     setDateError(Message.datetime.INVALID_DATE);
@@ -425,8 +378,6 @@ const DateTime = ({
                   (timePickerDate: Date) => {
                     let tempDate = new Date();
                     if (timeDateValue) tempDate = new Date(timeDateValue);
-                    tempDate.setDate(value.getDate());
-                    tempDate.setMonth(value.getMonth());
                     tempDate.setHours(timePickerDate.getHours(), timePickerDate.getMinutes());
                     tempDate.setSeconds(0);
 

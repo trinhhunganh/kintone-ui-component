@@ -462,7 +462,7 @@ class DateTime extends Control<DateTimeProps> {
     this._timeTextInput.focus();
   }
 
-  getValue(): Date | undefined {
+  getValue(): Date | undefined | null {
     let value;
     if (this._props.value) {
       value = new Date(this._props.value);
@@ -477,35 +477,41 @@ class DateTime extends Control<DateTimeProps> {
           value.setMinutes(this._time.getMinutes());
           return value;
       }
+    } 
+    else if (this._props.value === null) {
+      value = null;
     }
     return value;
   }
 
   setValue(date_opt: any) {
     let date = date_opt;
-    if (date === null) {
-      date = new Date();
-    } else if (date === undefined || !(date instanceof Date)) {
+    if (date === undefined || !(date instanceof Date || date === null)) {
       throw new Error(Message.common.INVALID_ARGUMENT);
     }
 
     switch (this._props.type) {
       case 'date':
-        this._props.value = new Date(date);
-        this._calendar.setValue(new Date(date));
+        this._props.value = date;
+        this._calendar.setValue(date);
         this.rerender(['dateTextInput']);
         break;
       case 'time':
-        this._time = new Date(date);
-        this.rerender(['timeTextInput']);
+        if(date !== null) {
+          this._time = date;
+          this.rerender(['timeTextInput']);
+        }
         break;
       case 'datetime':
       default:
-        this._props.value = new Date(date);
-        this._time = new Date(date);
-        this._calendar.setValue(new Date(date));
+        this._props.value = date;
         this.rerender(['dateTextInput']);
-        this.rerender(['timeTextInput']);
+        this._calendar.setValue(date);
+        if(date !== null) {
+          this._time = date;
+          this.rerender(['timeTextInput']);
+        }
+        break;
     }
   }
 

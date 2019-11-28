@@ -272,6 +272,9 @@ const DateTime = ({
                       } else {
                         setDateValue(null)
                       }
+                      setInputValue('')
+                      setShowPickerError(false)
+                      setHasSelection(false)
                     }
                     setPickerDisplay('none');
                   }

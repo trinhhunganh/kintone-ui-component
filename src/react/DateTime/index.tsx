@@ -205,7 +205,6 @@ const DateTime = ({
                     setDateError(Message.datetime.INVALID_DATE);
                     setShowPickerError(true);
                   }
-
                   const relatedTarget = e.relatedTarget ||
                     (e as any).explicitOriginalTarget ||
                     document.activeElement; // IE11
@@ -213,18 +212,11 @@ const DateTime = ({
                   if (
                     relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
                   ) {
-                    if (returnDate) {
-                      setShowPickerError(false);
-                      setHasSelection(true);
-                      if(!isUncontrolledComponent) {
-                        onChange(returnDate);
-                      } 
-                      else {
-                        setDateValue(returnDate);
-                      }
-                    }
+                    if(!isUncontrolledComponent) {
+                      onChange(returnDate);
+                    } 
                     else {
-                      setHasSelection(false);
+                      setDateValue(returnDate);
                     }
                     setPickerDisplay('none');
                   }

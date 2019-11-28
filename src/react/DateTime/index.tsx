@@ -192,7 +192,7 @@ const DateTime = ({
                 value={inputValue}
                 onBlur={(e) => {
                   const tempDate = parseStringToDate(e.target.value, dateFormat);
-                  let returnDate: Date|null = null;
+                  let returnDate: Date|null|undefined = null;
                   if (tempDate instanceof Date && !isNaN(tempDate as any)) {
                     returnDate = new Date(tempDate);
                     if(typeDateTime === 'datetime') {
@@ -202,8 +202,10 @@ const DateTime = ({
                     }
                     setShowPickerError(false);
                   } else if (e.target.value) {
+                    returnDate = undefined;
                     setDateError(Message.datetime.INVALID_DATE);
                     setShowPickerError(true);
+
                   }
                   const relatedTarget = e.relatedTarget ||
                     (e as any).explicitOriginalTarget ||
@@ -212,11 +214,13 @@ const DateTime = ({
                   if (
                     relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
                   ) {
-                    if(!isUncontrolledComponent) {
-                      onChange(returnDate);
-                    } 
-                    else {
-                      setDateValue(returnDate);
+                    if(returnDate !== undefined) {
+                      if(!isUncontrolledComponent) {
+                        onChange(returnDate);
+                      } 
+                      else {
+                        setDateValue(returnDate);
+                      }
                     }
                     setPickerDisplay('none');
                   }

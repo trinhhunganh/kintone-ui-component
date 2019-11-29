@@ -30,7 +30,6 @@ const DateTime = ({
   dateFormat = 'MM/dd/YYYY',
   type = 'datetime',
   timeFormat = 'HH:mm'}: DateTimeConstructorParameters) => {
-
   let localeObj = ja;
   if (locale === 'en') {
     localeObj = en;

@@ -45,14 +45,11 @@ const DateTime = ({
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
-  const [typeDateTime, setTypeDateTime] = useState(type);
   const [dateValue, setDateValue] = useState<Date|null>(value ? value : new Date());
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
   const timePickerRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
-  if (typeDateTime !== 'datetime' && typeDateTime !== 'date' && typeDateTime !== 'time') {
-    setTypeDateTime('datetime');
-  }
+
   useEffect(()=>{
     if (value !== undefined) {
       setDateValue(value);
@@ -89,7 +86,7 @@ const DateTime = ({
     newTime.setSeconds(0);
     newTime.setMinutes(timeValue.getMinutes() + minutes);
     setTimeValue(newTime);
-    if (typeDateTime === 'time' || (inputValue && !showPickerError)) {
+    if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
     timeInput.value = format(newTime, timeFormat);
@@ -105,7 +102,7 @@ const DateTime = ({
     newTime.setSeconds(0);
     newTime.setHours(timeValue.getHours() + hours);
     setTimeValue(new Date(newTime));
-    if (typeDateTime === 'time' || (inputValue && !showPickerError)) {
+    if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
     timeInput.value = format(newTime, timeFormat);
@@ -172,7 +169,7 @@ const DateTime = ({
     let returnDate: Date|null|undefined = null;
     if (tempDate instanceof Date && !isNaN(tempDate as any)) {
       returnDate = new Date(tempDate);
-      if (typeDateTime === 'datetime') {
+      if (type === 'datetime') {
         returnDate.setHours(timeValue.getHours());
         returnDate.setMinutes(timeValue.getMinutes());
         returnDate.setSeconds(0);
@@ -233,7 +230,7 @@ const DateTime = ({
     return (
       <div className="date-time-container">
         {
-          (typeDateTime === 'datetime' || typeDateTime === 'date') &&
+          (type === 'datetime' || type === 'date') &&
           <div className="date-container">
             <div className="text-input-container" key={`${dateError}`}>
               <input
@@ -267,7 +264,7 @@ const DateTime = ({
           </div>
         }
         {
-          (typeDateTime === 'datetime' || typeDateTime === 'time') &&
+          (type === 'datetime' || type === 'time') &&
           <div className="time-container">
             <input
               ref={timeInputRef}
@@ -358,7 +355,7 @@ const DateTime = ({
                   newTime.setFullYear(dateValue.getFullYear());
                 }
                 setTimeValue(new Date(newTime));
-                if (typeDateTime === 'time' || (inputValue && !showPickerError)) {
+                if (type === 'time' || (inputValue && !showPickerError)) {
                   onChange(new Date(newTime));
                 }
                 setTimePickerDisplay('none');
@@ -378,7 +375,7 @@ const DateTime = ({
                     tempDate.setSeconds(0);
                     setTimePickerDisplay('none');
                     setTimeValue(new Date(tempDate));
-                    if (typeDateTime === 'time' || (inputValue && !showPickerError)) {
+                    if (type === 'time' || (inputValue && !showPickerError)) {
                       onChange(tempDate);
                     }
                   }

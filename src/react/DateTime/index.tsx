@@ -201,7 +201,7 @@ const DateTime = ({
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
   };
-  const _onTimeInputKeydownHandler = (e: React.KeyboardEvent) => {
+  const _onTimeInputKeydownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
     switch (e.key) {
       case 'Tab':
@@ -266,7 +266,7 @@ const DateTime = ({
       setTimePickerDisplay('none');
     }
   };
-  const _onTimeInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const _onTimeInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
     let newTime = parseStringToTime(timeTextInput.value);
     if (!newTime) {
@@ -289,7 +289,6 @@ const DateTime = ({
         previousMinutes = '0';
       }
       newTime.setMinutes(parseInt(previousMinutes + '' + newTime.getMinutes(), 10));
-      timeTextInput.value = format(newTime, timeFormat);
     } else {
       // hours are being edited
       let previousHours: string;
@@ -304,7 +303,6 @@ const DateTime = ({
         previousHours = '0';
       }
       newTime.setHours(parseInt(previousHours + '' + newTime.getHours(), 10));
-      timeTextInput.value = format(newTime, timeFormat);
     }
     newTime.setSeconds(0);
     if (dateValue) {
@@ -312,7 +310,12 @@ const DateTime = ({
       newTime.setDate(dateValue.getDate());
       newTime.setFullYear(dateValue.getFullYear());
     }
-    setTimeValue(new Date(newTime));
+    if(value === undefined) {
+      setTimeValue(new Date(newTime));
+    } else {
+      //reset to old value
+      setTimeValue(new Date(timeValue));
+    }
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(new Date(newTime));
     }
@@ -324,7 +327,9 @@ const DateTime = ({
     tempDate.setHours(timePickerDate.getHours(), timePickerDate.getMinutes());
     tempDate.setSeconds(0);
     setTimePickerDisplay('none');
-    setTimeValue(new Date(tempDate));
+    if(value === undefined) {
+      setTimeValue(new Date(tempDate));
+    }
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(tempDate);
     }

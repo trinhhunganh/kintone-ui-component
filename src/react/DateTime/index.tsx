@@ -47,6 +47,7 @@ const DateTime = ({
   const [inputValue, setInputValue] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
   const [dateValue, setDateValue] = useState<Date|null>(value ? value : new Date());
+  const [tempDateValue, setTempDateValue] = useState<Date|null>(value ? value : new Date());
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
   const timePickerRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
@@ -158,7 +159,6 @@ const DateTime = ({
       returnDate = undefined;
       setDateError(Message.datetime.INVALID_DATE);
       setShowPickerError(true);
-
     }
     const relatedTarget = e.relatedTarget ||
       (e as any).explicitOriginalTarget ||
@@ -172,6 +172,8 @@ const DateTime = ({
         setDateValue(returnDate);
       }
       setPickerDisplay('none');
+    } else if (returnDate !== undefined) {
+      setTempDateValue(returnDate);
     }
   };
   const _onDateInputKeydownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -205,6 +207,9 @@ const DateTime = ({
         setShowPickerError(false);
         setHasSelection(false);
       }
+    } else if (tempDateValue) {
+      setDateValue(tempDateValue);
+      onChange(tempDateValue);
     }
     setPickerDisplay('none');
   };

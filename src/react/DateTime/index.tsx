@@ -81,10 +81,12 @@ const DateTime = ({
     setLocaleObj(LOCALE_MAP[locale] ? LOCALE_MAP[locale] : ja);
   }, [locale]);
   useEffect(() => {
-    (timeInputRef.current as HTMLInputElement).value = format(timeValue, timeFormat);
+    if (timeInputRef.current) {
+      (timeInputRef.current as HTMLInputElement).value = format(timeValue, timeFormat);
+    }
   }, [timeFormat, timeInputRef, timeValue]);
   useEffect(() => {
-    if (document.activeElement === (timeInputRef.current as HTMLInputElement)) {
+    if (timeInputRef.current && document.activeElement === (timeInputRef.current as HTMLInputElement)) {
       (timeInputRef.current as HTMLInputElement).setSelectionRange(timeInputSelectionRange[0], timeInputSelectionRange[1]);
     }
   }, [timeInputSelectionRange, timeInputRef]);
@@ -310,10 +312,10 @@ const DateTime = ({
       newTime.setDate(dateValue.getDate());
       newTime.setFullYear(dateValue.getFullYear());
     }
-    if(value === undefined) {
+    if (value === undefined) {
       setTimeValue(new Date(newTime));
     } else {
-      //reset to old value
+      // reset to old value
       setTimeValue(new Date(timeValue));
     }
     if (type === 'time' || (inputValue && !showPickerError)) {
@@ -327,7 +329,7 @@ const DateTime = ({
     tempDate.setHours(timePickerDate.getHours(), timePickerDate.getMinutes());
     tempDate.setSeconds(0);
     setTimePickerDisplay('none');
-    if(value === undefined) {
+    if (value === undefined) {
       setTimeValue(new Date(tempDate));
     }
     if (type === 'time' || (inputValue && !showPickerError)) {

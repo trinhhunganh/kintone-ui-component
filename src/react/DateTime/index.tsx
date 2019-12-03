@@ -274,9 +274,9 @@ const DateTime = ({
   };
   const _onTimeInputFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
-    timeTextInput.setSelectionRange(0,2)
+    timeTextInput.setSelectionRange(0, 2);
     setTimeout(() => {
-      timeTextInput.setSelectionRange(0,2)
+      timeTextInput.setSelectionRange(0, 2);
     }, 10);
     setTimePickerDisplay('flex');
     setPickerDisplay('none');

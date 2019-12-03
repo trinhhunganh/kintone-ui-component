@@ -21,6 +21,12 @@ type DateTimeConstructorParameters = {
   isVisible?: boolean;
 }
 
+const LOCALE_MAP = {
+  'ja': ja,
+  'zh': zh,
+  'en': en,
+};
+
 const DateTime = ({
   value,
   isDisabled = false,
@@ -30,13 +36,8 @@ const DateTime = ({
   dateFormat = 'MM/dd/YYYY',
   type = 'datetime',
   timeFormat = 'HH:mm'}: DateTimeConstructorParameters) => {
-  let localeObj = ja;
-  if (locale === 'en') {
-    localeObj = en;
-  } else if (locale === 'zh') {
-    localeObj = zh;
-  }
 
+  const [localeObj, setLocaleObj] = useState(LOCALE_MAP[locale] ? LOCALE_MAP[locale] : ja);
   const [calendarDisplayDate, setCalendarDisplayDate] = useState(value ? new Date(value) : new Date());
   const [timeValue, setTimeValue] = useState(value ? new Date(value) : new Date());
   const [pickerDisplay, setPickerDisplay] = useState('none');
@@ -75,6 +76,9 @@ const DateTime = ({
       setHasSelection(false);
     }
   }, [dateFormat, dateValue]);
+  useEffect(() => {
+    setLocaleObj(LOCALE_MAP[locale] ? LOCALE_MAP[locale] : ja);
+  }, [locale]);
 
   const _changeMinutesBy = (minutes: number, timeInput: HTMLInputElement) => {
     const newTime = new Date(timeValue);
@@ -225,7 +229,7 @@ const DateTime = ({
     }
     setPickerDisplay('none');
   };
-  const _onTimeInputClickHandler =  (e: React.MouseEvent<HTMLInputElement>) => {
+  const _onTimeInputClickHandler = (e: React.MouseEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
     if (timeTextInput.selectionStart &&
       (timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5)) {
@@ -235,7 +239,7 @@ const DateTime = ({
     }
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
-  }
+  };
   const _onTimeInputFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
     const timeInput = e.target as HTMLInputElement;
     setTimeout(()=>{
@@ -245,7 +249,7 @@ const DateTime = ({
     }, 1);
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
-  }
+  };
   const _onTimeInputBlurHandler = (e: React.FocusEvent<HTMLInputElement>) => {
     const relatedTarget = e.relatedTarget ||
     (e as any).explicitOriginalTarget ||
@@ -254,7 +258,7 @@ const DateTime = ({
     if (relatedTarget !== timePicker && !timePicker.contains(relatedTarget as HTMLElement)) {
       setTimePickerDisplay('none');
     }
-  }
+  };
   const _onTimeInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
     let newTime = parseStringToTime(timeTextInput.value);
@@ -308,7 +312,7 @@ const DateTime = ({
       onChange(new Date(newTime));
     }
     setTimePickerDisplay('none');
-  }
+  };
   const _onTimePickerClickHandler = (timePickerDate: Date) => {
     let tempDate = new Date();
     if (timeValue) tempDate = new Date(timeValue);
@@ -319,7 +323,7 @@ const DateTime = ({
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(tempDate);
     }
-  }
+  };
 
   if (isVisible) {
     return (

@@ -45,9 +45,8 @@ const DateTime = ({
   const [dateError, setDateError] = useState('');
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
-  const [timeInputValue, setTimeInputValue] = useState(format(timeValue, timeFormat));
   const [hasSelection, setHasSelection] = useState(false);
-  const [selectionRange, setSelectionRange] = useState([0, 2]);
+  const [timeInputSelectionRange, setTimeInputSelectionRange] = useState([0, 2]);
   const [dateValue, setDateValue] = useState<Date|null>(value ? value : new Date());
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
@@ -82,14 +81,14 @@ const DateTime = ({
     setLocaleObj(LOCALE_MAP[locale] ? LOCALE_MAP[locale] : ja);
   }, [locale]);
   useEffect(() => {
-    setTimeInputValue(format(timeValue, timeFormat));
-  }, [timeFormat, timeValue]);
+    (timeInputRef.current as HTMLInputElement).value = format(timeValue, timeFormat);
+  }, [timeFormat, timeInputRef, timeValue]);
   useEffect(() => {
     if (document.activeElement === (timeInputRef.current as HTMLInputElement)) {
-      (timeInputRef.current as HTMLInputElement).setSelectionRange(selectionRange[0], selectionRange[1]);
+      (timeInputRef.current as HTMLInputElement).setSelectionRange(timeInputSelectionRange[0], timeInputSelectionRange[1]);
     }
-  }, [selectionRange, timeInputRef]);
-  const _changeMinutesBy = (minutes: number, timeInput: HTMLInputElement) => {
+  }, [timeInputSelectionRange, timeInputRef]);
+  const _changeMinutesBy = (minutes: number) => {
     const newTime = new Date(timeValue);
     if (dateValue) {
       newTime.setDate(dateValue.getDate());
@@ -104,9 +103,8 @@ const DateTime = ({
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
-    setSelectionRange([3, 5]);
   };
-  const _changeHoursBy = (hours: number, timeInput: HTMLInputElement) => {
+  const _changeHoursBy = (hours: number) => {
     const newTime = new Date(timeValue);
     if (dateValue) {
       newTime.setDate(dateValue.getDate());
@@ -121,7 +119,6 @@ const DateTime = ({
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
-    setSelectionRange([0, 2]);
   };
   const _onDateInputFocusHandler = () => {
     setPickerDisplay('block');
@@ -197,9 +194,9 @@ const DateTime = ({
     const timeTextInput = e.target as HTMLInputElement;
     if (timeTextInput.selectionStart &&
       (timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5)) {
-      setSelectionRange([3, 5]);
+      setTimeInputSelectionRange([3, 5]);
     } else {
-      setSelectionRange([0, 2]);
+      setTimeInputSelectionRange([0, 2]);
     }
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
@@ -211,19 +208,19 @@ const DateTime = ({
         if (timeTextInput.selectionStart !== 3 && timeTextInput.selectionEnd !== 5) {
           e.preventDefault();
           setTimePickerDisplay('none');
-          setSelectionRange([3, 5]);
+          setTimeInputSelectionRange([3, 5]);
         }
         break;
       case 'ArrowLeft':
       case 'Left':
         e.preventDefault();
-        setSelectionRange([0, 2]);
+        setTimeInputSelectionRange([0, 2]);
         setTimePickerDisplay('none');
         break;
       case 'ArrowRight':
       case 'Right':
         e.preventDefault();
-        setSelectionRange([3, 5]);
+        setTimeInputSelectionRange([3, 5]);
         setTimePickerDisplay('none');
         break;
       case 'ArrowUp':
@@ -231,9 +228,9 @@ const DateTime = ({
         e.preventDefault();
         if (timeTextInput.selectionStart && timeTextInput.selectionEnd &&
           timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5) {
-          _changeMinutesBy(1, e.target as HTMLInputElement);
+          _changeMinutesBy(1);
         } else {
-          _changeHoursBy(1, e.target as HTMLInputElement);
+          _changeHoursBy(1);
         }
         setTimePickerDisplay('none');
         break;
@@ -242,9 +239,9 @@ const DateTime = ({
         e.preventDefault();
         if (timeTextInput.selectionStart && timeTextInput.selectionEnd &&
           timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5) {
-          _changeMinutesBy(-1, e.target as HTMLInputElement);
+          _changeMinutesBy(-1);
         } else {
-          _changeHoursBy(-1, e.target as HTMLInputElement);
+          _changeHoursBy(-1);
         }
         setTimePickerDisplay('none');
         break;
@@ -256,7 +253,7 @@ const DateTime = ({
     }
   };
   const _onTimeInputFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
-    setSelectionRange([0, 2]);
+    setTimeInputSelectionRange([0, 2]);
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
   };
@@ -293,7 +290,6 @@ const DateTime = ({
       }
       newTime.setMinutes(parseInt(previousMinutes + '' + newTime.getMinutes(), 10));
       timeTextInput.value = format(newTime, timeFormat);
-      setSelectionRange([3, 5]);
     } else {
       // hours are being edited
       let previousHours: string;
@@ -309,7 +305,6 @@ const DateTime = ({
       }
       newTime.setHours(parseInt(previousHours + '' + newTime.getHours(), 10));
       timeTextInput.value = format(newTime, timeFormat);
-      setSelectionRange([0, 2]);
     }
     newTime.setSeconds(0);
     if (dateValue) {
@@ -385,7 +380,6 @@ const DateTime = ({
               onClick={_onTimeInputClickHandler}
               onFocus={_onTimeInputFocusHandler}
               onBlur={_onTimeInputBlurHandler}
-              value={timeInputValue}
               onChange={_onTimeInputChangeHandler}
               onKeyDown={_onTimeInputKeydownHandler}
             />

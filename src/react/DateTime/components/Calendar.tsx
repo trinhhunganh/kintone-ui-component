@@ -11,11 +11,9 @@ type CalendarProps = {
   locale?: Locale;
   pickerDisplay?: string;
   hasSelection?: boolean;
-  onDateClick?: (date: Date | null | -1, previousDate: Date | null) => void;
+  onDateClick?: (date: Date | null | -1) => void;
   calRef: any;
 }
-
-let previousDate: Date;
 
 const Calendar = ({
   date,
@@ -40,17 +38,9 @@ const Calendar = ({
       }
     }
   };
-  if (!previousDate) {
-    previousDate = new Date(date);
-  }
+
   useEffect(()=>{
-    if (date) {
-      if (!isSameDate(date, previousDate)) {
-        const newDate = new Date(date);
-        setDisplayDate(newDate);
-        previousDate = newDate;
-      }
-    }
+    setDisplayDate(date);
   }, [date]);
 
   const _handleDropdownSelection = (e: any) => {
@@ -83,7 +73,10 @@ const Calendar = ({
           !calRef.current.contains(relatedTarget as HTMLElement) &&
           pickerDisplay !== 'none'
         ) {
-          onDateClick(-1, null);
+          if(hasSelection) {
+            setDisplayDate(date);
+          }
+          onDateClick(-1);
         }
       }}
     >
@@ -202,7 +195,7 @@ const Calendar = ({
                   const returnDate = new Date(date);
                   returnDate.setFullYear(day.getFullYear(), day.getMonth(), day.getDate());
 
-                  onDateClick(returnDate, null);
+                  onDateClick(returnDate);
                   setDisplayDate(new Date(day));
                 }}
                 onKeyUp={()=>{
@@ -210,7 +203,7 @@ const Calendar = ({
                   const returnDate = new Date(date);
                   returnDate.setFullYear(day.getFullYear(), day.getMonth(), day.getDate());
 
-                  onDateClick(returnDate, null);
+                  onDateClick(returnDate);
                   setDisplayDate(new Date(day));
                 }}
                 tabIndex={0}
@@ -226,10 +219,10 @@ const Calendar = ({
             tabIndex={0}
             className="today calendar-button-control"
             onClick={()=>{
-              setDisplayDate(new Date()); onDateClick(today, null);
+              setDisplayDate(new Date()); onDateClick(today);
             }}
             onKeyUp={()=>{
-              setDisplayDate(new Date()); onDateClick(today, null);
+              setDisplayDate(new Date()); onDateClick(today);
             }}
           >{locale.today}
           </span>
@@ -237,10 +230,10 @@ const Calendar = ({
             role="button"
             className="none calendar-button-control"
             onClick={()=>{
-              onDateClick(null, previousDate);
+              onDateClick(null);
             }}
             onKeyUp={()=>{
-              onDateClick(null, previousDate);
+              onDateClick(null);
             }}
             tabIndex={-1}
           >{locale.none}

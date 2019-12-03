@@ -38,11 +38,6 @@ const Calendar = ({
       }
     }
   };
-
-  useEffect(()=>{
-    setDisplayDate(date);
-  }, [date]);
-
   const _handleDropdownSelection = (e: any) => {
     if (dropDownsRowRef.current) {
       const selectedDropdownOuter = e.target.closest('.kuc-dropdown-outer');
@@ -52,6 +47,9 @@ const Calendar = ({
     }
   };
 
+  useEffect(()=>{
+    setDisplayDate(date);
+  }, [date]);
   useEffect(() => {
     document.addEventListener('mousedown', _handleDropdownSelection);
     return () => document.removeEventListener('mousedown', _handleDropdownSelection);

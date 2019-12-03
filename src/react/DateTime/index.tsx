@@ -1,6 +1,6 @@
 import '../../css/DateTime.css';
 import '../../css/Text.css';
-import React, {useState, createRef, useEffect} from 'react';
+import React, {useState, createRef, useEffect, useCallback} from 'react';
 import {en, ja, zh, format} from './components/Locale';
 
 import {parseStringToDate, parseStringToTime} from './components/utils';
@@ -46,11 +46,20 @@ const DateTime = ({
   const [timePickerDisplay, setTimePickerDisplay] = useState('none');
   const [inputValue, setInputValue] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
-  const [timeInputSelectionRange, setTimeInputSelectionRange] = useState([0, 2]);
   const [dateValue, setDateValue] = useState<Date|null>(value ? value : new Date());
   const calendarRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
   const timeInputRef: React.RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
   const timePickerRef: React.RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
+  const _timeInputSelectionEffect = useCallback((selectionStart: number, selectionEnd: number) => {
+    if (timeInputRef.current && document.activeElement === (timeInputRef.current as HTMLInputElement)) {
+      (timeInputRef.current as HTMLInputElement).setSelectionRange(selectionStart, selectionEnd);
+    }
+  }, [timeInputRef]);
+  const _timeInputValueChangeEffect = useCallback((newTimeValue) => {
+    if (timeInputRef.current) {
+      (timeInputRef.current as HTMLInputElement).value = format(newTimeValue, timeFormat);
+    }
+  }, [timeFormat, timeInputRef]);
 
   useEffect(()=>{
     if (value !== undefined) {
@@ -62,7 +71,11 @@ const DateTime = ({
       // validate date format
       const newDateInputValue = format(dateValue, dateFormat);
       setInputValue(newDateInputValue);
-      setCalendarDisplayDate(dateValue);
+      // performance tuning
+      if (new Date(dateValue).setHours(0, 0, 0, 0) !== new Date(calendarDisplayDate).setHours(0, 0, 0, 0)) {
+        setCalendarDisplayDate(dateValue);
+      }
+      //
       if (newDateInputValue === dateFormat) {
         setDateError(Message.datetime.INVALID_DATE);
         setShowPickerError(true);
@@ -76,20 +89,17 @@ const DateTime = ({
       setShowPickerError(false);
       setHasSelection(false);
     }
-  }, [dateFormat, dateValue]);
+  }, [calendarDisplayDate, dateFormat, dateValue]);
   useEffect(() => {
     setLocaleObj(LOCALE_MAP[locale] ? LOCALE_MAP[locale] : ja);
   }, [locale]);
   useEffect(() => {
-    if (timeInputRef.current) {
-      (timeInputRef.current as HTMLInputElement).value = format(timeValue, timeFormat);
+    const newTimeValue = format(timeValue, timeFormat);
+    if (timeInputRef.current && (timeInputRef.current as HTMLInputElement).value !== newTimeValue) {
+      (timeInputRef.current as HTMLInputElement).value = newTimeValue;
     }
   }, [timeFormat, timeInputRef, timeValue]);
-  useEffect(() => {
-    if (timeInputRef.current && document.activeElement === (timeInputRef.current as HTMLInputElement)) {
-      (timeInputRef.current as HTMLInputElement).setSelectionRange(timeInputSelectionRange[0], timeInputSelectionRange[1]);
-    }
-  }, [timeInputSelectionRange, timeInputRef]);
+
   const _changeMinutesBy = (minutes: number) => {
     const newTime = new Date(timeValue);
     if (dateValue) {
@@ -99,9 +109,12 @@ const DateTime = ({
     }
     newTime.setSeconds(0);
     newTime.setMinutes(timeValue.getMinutes() + minutes);
-    if (value === undefined) {
-      setTimeValue(newTime);
+    if (newTime.getHours() !== timeValue.getHours()) {
+      newTime.setHours(timeValue.getHours());
     }
+    _timeInputValueChangeEffect(newTime);
+    _timeInputSelectionEffect(3, 5);
+    setTimeValue(newTime);
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
@@ -115,9 +128,12 @@ const DateTime = ({
     }
     newTime.setSeconds(0);
     newTime.setHours(timeValue.getHours() + hours);
-    if (value === undefined) {
-      setTimeValue(new Date(newTime));
+    if (newTime.getDate() !== timeValue.getDate()) {
+      newTime.setDate(timeValue.getDate());
     }
+    _timeInputValueChangeEffect(newTime);
+    _timeInputSelectionEffect(0, 2);
+    setTimeValue(newTime);
     if (type === 'time' || (inputValue && !showPickerError)) {
       onChange(newTime);
     }
@@ -194,12 +210,14 @@ const DateTime = ({
   };
   const _onTimeInputClickHandler = (e: React.MouseEvent<HTMLInputElement>) => {
     const timeTextInput = e.target as HTMLInputElement;
-    if (timeTextInput.selectionStart &&
-      (timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5)) {
-      setTimeInputSelectionRange([3, 5]);
-    } else {
-      setTimeInputSelectionRange([0, 2]);
-    }
+    setTimeout(() => {
+      if (timeTextInput.selectionStart &&
+        (timeTextInput.selectionStart >= 2 && timeTextInput.selectionStart <= 5)) {
+        timeTextInput.setSelectionRange(3, 5);
+      } else {
+        timeTextInput.setSelectionRange(0, 2);
+      }
+    }, 10);
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
   };
@@ -210,19 +228,19 @@ const DateTime = ({
         if (timeTextInput.selectionStart !== 3 && timeTextInput.selectionEnd !== 5) {
           e.preventDefault();
           setTimePickerDisplay('none');
-          setTimeInputSelectionRange([3, 5]);
+          _timeInputSelectionEffect(3, 5);
         }
         break;
       case 'ArrowLeft':
       case 'Left':
         e.preventDefault();
-        setTimeInputSelectionRange([0, 2]);
+        _timeInputSelectionEffect(0, 2);
         setTimePickerDisplay('none');
         break;
       case 'ArrowRight':
       case 'Right':
         e.preventDefault();
-        setTimeInputSelectionRange([3, 5]);
+        _timeInputSelectionEffect(3, 5);
         setTimePickerDisplay('none');
         break;
       case 'ArrowUp':
@@ -255,7 +273,11 @@ const DateTime = ({
     }
   };
   const _onTimeInputFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
-    setTimeInputSelectionRange([0, 2]);
+    const timeTextInput = e.target as HTMLInputElement;
+    timeTextInput.setSelectionRange(0,2)
+    setTimeout(() => {
+      timeTextInput.setSelectionRange(0,2)
+    }, 10);
     setTimePickerDisplay('flex');
     setPickerDisplay('none');
   };
@@ -291,6 +313,8 @@ const DateTime = ({
         previousMinutes = '0';
       }
       newTime.setMinutes(parseInt(previousMinutes + '' + newTime.getMinutes(), 10));
+      timeTextInput.value = format(newTime, timeFormat);
+      timeTextInput.setSelectionRange(3, 5);
     } else {
       // hours are being edited
       let previousHours: string;
@@ -305,6 +329,8 @@ const DateTime = ({
         previousHours = '0';
       }
       newTime.setHours(parseInt(previousHours + '' + newTime.getHours(), 10));
+      timeTextInput.value = format(newTime, timeFormat);
+      timeTextInput.setSelectionRange(0, 2);
     }
     newTime.setSeconds(0);
     if (dateValue) {
@@ -312,14 +338,9 @@ const DateTime = ({
       newTime.setDate(dateValue.getDate());
       newTime.setFullYear(dateValue.getFullYear());
     }
-    if (value === undefined) {
-      setTimeValue(new Date(newTime));
-    } else {
-      // reset to old value
-      setTimeValue(new Date(timeValue));
-    }
+    setTimeValue(newTime);
     if (type === 'time' || (inputValue && !showPickerError)) {
-      onChange(new Date(newTime));
+      onChange(newTime);
     }
     setTimePickerDisplay('none');
   };

@@ -167,9 +167,8 @@ const DateTime = ({
     if (
       relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
     ) {
-      if (returnDate !== undefined && value !== undefined) {
-        onChange(returnDate);
-        setDateValue(returnDate);
+      if (returnDate !== undefined) {
+        value !== undefined ? onChange(returnDate) : setDateValue(returnDate);
       }
       setPickerDisplay('none');
     } else if (returnDate !== undefined && value !== undefined) {
@@ -208,8 +207,7 @@ const DateTime = ({
         setHasSelection(false);
       }
     } else if (tempDateValue) {
-      setDateValue(tempDateValue);
-      onChange(tempDateValue);
+      value !== undefined ? onChange(tempDateValue) : setDateValue(tempDateValue);
     }
     setPickerDisplay('none');
   };

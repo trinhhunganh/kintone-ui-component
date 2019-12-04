@@ -167,12 +167,12 @@ const DateTime = ({
     if (
       relatedTarget !== calendar && !calendar.contains(relatedTarget as HTMLElement)
     ) {
-      if (returnDate !== undefined) {
+      if (returnDate !== undefined && value !== undefined) {
         onChange(returnDate);
         setDateValue(returnDate);
       }
       setPickerDisplay('none');
-    } else if (returnDate !== undefined) {
+    } else if (returnDate !== undefined && value !== undefined) {
       setTempDateValue(returnDate);
     }
   };
